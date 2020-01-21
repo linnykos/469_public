@@ -1,3 +1,16 @@
+output_coefficients <- function(fit_obj, dat, response_idx){
+  stopifnot(any(c("glm", "cv.glmnet") %in% class(fit_obj)))
+  
+  if("glm" %in% class(fit_obj)){
+    coef_vec <- coef(fit_obj)
+  } else {
+    coef_vec <- as.numeric(stats::coef(fit_obj, s = "lambda.1se"))[-1]
+    names(coef_vec) <- colnames(dat)[-response_idx]
+  }
+  
+  coef_vec
+}
+
 output_predictions <- function(fit_obj, dat, response_idx){
   stopifnot(any(c("glm", "cv.glmnet") %in% class(fit_obj)))
   stopifnot(is.data.frame(dat))
@@ -17,15 +30,4 @@ output_predictions <- function(fit_obj, dat, response_idx){
   pred_vec
 }
 
-output_coefficients <- function(fit_obj, dat, response_idx){
-  stopifnot(any(c("glm", "cv.glmnet") %in% class(fit_obj)))
-  
-  if("glm" %in% class(fit_obj)){
-    coef_vec <- coef(fit_obj)
-  } else {
-    coef_vec <- as.numeric(stats::coef(fit_obj, s = "lambda.1se"))[-1]
-    names(coef_vec) <- colnames(dat)[-response_idx]
-  }
-  
-  coef_vec
-}
+
