@@ -55,9 +55,9 @@ generate_data <- function(n, d, k = 3, cor_within = 0.5){
 clockwise90 <- function(a) { t(a[nrow(a):1,]) }
 
 # the "..." notation in the fuction allows you to input your own arguments into the image function
-# for example, try plot_covariance(matrix(rnorm(25),5,5), main = "Test")
+# for example, try plot_covariance(matrix(,5,5), main = "Test")
 plot_covariance <- function(dat, ...){
-  graphics::image(clockwise90(stats::cov(dat)), asp = T, ...)
+  graphics::image(clockwise90(stats::cor(dat)), asp = T, ...)
 }
 
 
