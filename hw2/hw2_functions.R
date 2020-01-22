@@ -1,3 +1,4 @@
+# functions for Question 1
 output_coefficients <- function(fit_obj, dat, response_idx){
   stopifnot(any(c("glm", "cv.glmnet") %in% class(fit_obj)))
   
@@ -30,6 +31,10 @@ output_predictions <- function(fit_obj, dat, response_idx){
   pred_vec
 }
 
+########
+
+# functions for Question 2
+
 generate_data <- function(n, d, k = 3, cor_within = 0.5){
   cor_mat <- matrix(0, d, d)
   idx_vec <- round(seq(0, d, length.out = k+1))
@@ -46,5 +51,13 @@ generate_data <- function(n, d, k = 3, cor_within = 0.5){
   list(x = x, y = y, coef_truth = coef_truth)
 }
 
+# from http://www.stat.cmu.edu/~ryantibs/statcomp/lectures/plotting.html
+clockwise90 <- function(a) { t(a[nrow(a):1,]) }
+
+# the "..." notation in the fuction allows you to input your own arguments into the image function
+# for example, try plot_covariance(matrix(rnorm(25),5,5), main = "Test")
+plot_covariance <- function(dat, ...){
+  graphics::image(clockwise90(stats::cov(dat)), asp = T, ...)
+}
 
 
