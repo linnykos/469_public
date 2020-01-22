@@ -30,4 +30,21 @@ output_predictions <- function(fit_obj, dat, response_idx){
   pred_vec
 }
 
+generate_data <- function(n, d, k = 3, cor_within = 0.5){
+  cor_mat <- matrix(0, d, d)
+  idx_vec <- round(seq(0, d, length.out = k+1))
+  for(i in 1:k){
+    cor_mat[(idx_vec[i]+1):(idx_vec[i+1]), (idx_vec[i]+1):(idx_vec[i+1])] <- cor_within
+  }
+  diag(cor_mat) <- 1
+  
+  x <- MASS::mvrnorm(n = n, mu = rep(0, d), Sigma = cor_mat)
+  coef_truth <- rep(0,d)
+  coef_truth[idx_vec[-1]] <- 5
+  y <- as.numeric(x %*% coef_truth + stats::rnorm(n))
+  
+  list(x = x, y = y, coef_truth = coef_truth)
+}
+
+
 
