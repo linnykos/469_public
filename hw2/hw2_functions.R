@@ -1,6 +1,8 @@
 # functions for Question 1
 output_coefficients <- function(fit_obj, dat, response_idx){
   stopifnot(any(c("glm", "cv.glmnet") %in% class(fit_obj)))
+  stopifnot(is.data.frame(dat))
+  stopifnot(response_idx %% 1 == 0, response_idx > 0, response_idx <= ncol(dat))
   
   if("glm" %in% class(fit_obj)){
     coef_vec <- coef(fit_obj)
