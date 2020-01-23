@@ -16,12 +16,21 @@ str(dat)
 idx <- which(colnames(dat) == "AnyCHD")
 dat[,-idx] <- as.data.frame(scale(dat[,-idx]))
 
+## in general, outside of this course, this preprocessing/cleaning step is typically
+##   the one that will give you the most headache. forunately, for homeworks in this course
+##   we'll clean the data for you so you can jump (more-or-less) immediately to the "statistics"
+##   part of the analyses
+## outside of this course, you might find the stats::model.matrix useful
+
 ############
 
 # fitting logistic regression
 ## the "-1" in the formula omits the intercept
-glm_res <- stats::glm(AnyCHD ~ . -1 , data = dat, family = stats::binomial)
+glm_res <- stats::glm(AnyCHD ~ . - 1 , data = dat, family = stats::binomial)
 glm_res
+## note: the following line of code will NOT work
+## this demonstrates that the input dataset into glm_res MUST be a data frame
+glm_res <- stats::glm(AnyCHD ~ . - 1 , data = as.matrix(dat), family = stats::binomial)
 
 # extract estimated coefficients
 ## method 1: what you would usually do, outside of this homework
