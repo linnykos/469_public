@@ -31,6 +31,12 @@ glm_res
 ## note: the following line of code will NOT work
 ## this demonstrates that the input dataset into glm_res MUST be a data frame
 glm_res <- stats::glm(AnyCHD ~ . - 1 , data = as.matrix(dat), family = stats::binomial)
+## note: the "stats::" prefix I put before "glm" is simply for explicitly. This is R-lingo
+##   for telling R which package to specifically grab the "glm" function from. In most cases,
+##   you can omit "stats::" (or any package name prefix), and nothing will change. However,
+##   I will be doing this (whenever I remember) to explicitly remind students which
+##   package I'm using, which will become more useful as we start using functions for 
+##   many different packages
 
 # extract estimated coefficients
 ## method 1: what you would usually do, outside of this homework
