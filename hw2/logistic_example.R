@@ -15,6 +15,8 @@ str(dat)
 ## you don't need to do this step in your homework
 idx <- which(colnames(dat) == "AnyCHD")
 dat[,-idx] <- as.data.frame(scale(dat[,-idx]))
+## note: in general, you would want to avoid scaling the categorical variables (i.e. factors)
+##   such as "Sex", "Diabetes", "Educ", but we do that here for simplicity.
 
 ## in general, outside of this course, this preprocessing/cleaning step is typically
 ##   the one that will give you the most headache. forunately, for homeworks in this course
@@ -27,9 +29,10 @@ dat[,-idx] <- as.data.frame(scale(dat[,-idx]))
 # fitting logistic regression
 ## the "-1" in the formula omits the intercept
 glm_res <- stats::glm(AnyCHD ~ . - 1 , data = dat, family = stats::binomial)
+class(dat)
 glm_res
 ## note: the following line of code will NOT work
-## this demonstrates that the input dataset into glm_res MUST be a data frame
+## this demonstrates that the input dataset into glm MUST be a data frame
 glm_res <- stats::glm(AnyCHD ~ . - 1 , data = as.matrix(dat), family = stats::binomial)
 ## note: the "stats::" prefix I put before "glm" is simply for explicitly. This is R-lingo
 ##   for telling R which package to specifically grab the "glm" function from. In most cases,
@@ -37,6 +40,8 @@ glm_res <- stats::glm(AnyCHD ~ . - 1 , data = as.matrix(dat), family = stats::bi
 ##   I will be doing this (whenever I remember) to explicitly remind students which
 ##   package I'm using, which will become more useful as we start using functions for 
 ##   many different packages
+
+######
 
 # extract estimated coefficients
 ## method 1: what you would usually do, outside of this homework
@@ -46,6 +51,10 @@ length(coef_vec1) == (ncol(dat)-1)
 
 ## method 2: for now, use the output_coefficients function provided for this homework
 coef_vec2 <- output_coefficients(glm_res, dat, idx)
+
+## method 3: as it turns out, the glm_res obj contains the coefficients inside it, so we
+##  can just navigate and extract it directly
+coef_vec3 <- glm_res$coefficients
 
 ## check to see we got the same thing
 length(coef_vec1) == length(coef_vec2)
@@ -86,8 +95,8 @@ sum(abs(pred_vec1 - pred_vec3)) <= 1e-6
 ############
 
 # after extracting predictions, we can compute the misclassification rate
-true_response <- dat$AnyCHD
-tab <- table(pred_vec1, true_response) 
+obs_response <- dat$AnyCHD
+tab <- table(pred_vec1, obs_response) 
 tab
 ## the different rows reflect different estimated responses
 ## the different columns reflect different observed responses
@@ -126,6 +135,7 @@ graphics::arrows(res, coef_vec1 + sd_vec, res, coef_vec1 - sd_vec, angle=90, cod
 
 # plotting the log-odds
 ## we need to jitter the response (the "0.05*stats::rnorm..." part) so we can see the different values
+## notice that this is plotting the logit function
 pred_vec <- stats::predict(glm_res, type = "response", newdata = dat)
 ord <- order(pred_vec)
 
