@@ -12,11 +12,14 @@ str(dat)
 ############
 
 # for datasets like these (unlike SNP data), it's in your best interest to rescale the data
-## you don't need to do this step in your homework
+#   you don't need to do this step in your homework
+## remove education since it's categorical with more than 2 levels
+dat <- dat[,-which(colnames(dat) == "Educ")]
 idx <- which(colnames(dat) == "AnyCHD")
-dat[,-idx] <- as.data.frame(scale(dat[,-idx]))
-## note: in general, you would want to avoid scaling the categorical variables (i.e. factors)
-##   such as "Sex", "Diabetes", "Educ", but we do that here for simplicity.
+factor_idx <- which(apply(dat, 2, function(x){length(unique(x)) <= 5}))
+dat[,-factor_idx] <- as.data.frame(scale(dat[,-factor_idx, drop = F]))
+head(dat)
+summary(dat)
 
 ## in general, outside of this course, this preprocessing/cleaning step is typically
 ##   the one that will give you the most headache. forunately, for homeworks in this course
@@ -117,20 +120,24 @@ tab
 ## you might be familiar with ggplot, but in our class, we typically give our examples
 ##   in base R, since we don't assume familiarity with ggplot or any tidyverse-related package
 
+## let's refit the model with an intercept
+glm_res <- stats::glm(AnyCHD ~ . , data = dat, family = stats::binomial)
+coef_vec <- stats::coef(glm_res)
+
 ## extract standard errors
-name_vec <- names(coef_vec1)
-names(coef_vec1) <- NULL
+name_vec <- names(coef_vec)
+names(coef_vec) <- NULL
 sum_mat <- summary(glm_res)
 sd_vec <- sum_mat$coefficients[,2]
 
 orange <- grDevices::rgb(232, 125, 49, max = 255)
 blue <- grDevices::rgb(162, 215, 216, max = 255)
-res <- graphics::barplot(coef_vec1, col = orange, ylim = range(c(coef_vec1 - sd_vec,coef_vec1 + sd_vec)),
+res <- graphics::barplot(coef_vec, col = orange, ylim = range(c(coef_vec - sd_vec,coef_vec + sd_vec)),
                          main = "Coefficients for logisitic model")
 graphics::abline(0, 0, lwd = 2)
-graphics::text(as.numeric(res), min(coef_vec1 - sd_vec)-0.05, srt = -45, adj = 0,
+graphics::text(as.numeric(res), min(coef_vec - sd_vec)-0.05, srt = -45, adj = 0,
                xpd = T, labels = name_vec, cex = 1)
-graphics::arrows(res, coef_vec1 + sd_vec, res, coef_vec1 - sd_vec, angle=90, code=3, 
+graphics::arrows(res, coef_vec + sd_vec, res, coef_vec - sd_vec, angle=90, code=3, 
                  length=0.1)
 
 # plotting the log-odds
