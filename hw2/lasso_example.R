@@ -2,7 +2,7 @@
 source("https://raw.githubusercontent.com/linnylin92/469_public/master/hw2/hw2_functions.R")
 
 # load in data
-dat <- read.csv("https://raw.githubusercontent.com/linnylin92/469_public/master/hw2/framingham.csv")
+dat_org <- read.csv("https://raw.githubusercontent.com/linnylin92/469_public/master/hw2/framingham.csv")
 
 # you need to install the glmnet package first, via install.packages("glmnet")
 library(glmnet)
@@ -10,7 +10,8 @@ library(glmnet)
 ############
 
 # same preprocessing as before, you don't need to worry about this for your homework
-dat <- dat[,-which(colnames(dat) == "Educ")]
+dat_org <- dat_org[,-which(colnames(dat_org) == "Educ")]
+dat <- dat_org
 idx <- which(colnames(dat) == "AnyCHD")
 factor_idx <- which(apply(dat, 2, function(x){length(unique(x)) <= 5}))
 dat[,-factor_idx] <- as.data.frame(scale(dat[,-factor_idx, drop = F]))
@@ -119,6 +120,8 @@ sum(abs(coef_vec1 - coef_vec3)) <= 1e-6
 
 #############################
 
+
+
 # let's now compute the predictions from cvglmnet_res. there are many ways to do this
 ## method 1: what you would usually do, outside of this homework
 pred_vec1 <-  stats::predict(cvglmnet_res, newx = as.matrix(dat2[,-1]), s = "lambda.1se")
@@ -137,7 +140,6 @@ sum(abs(pred_vec1 - pred_vec2)) <= 1e-6
 pred_vec3 <- as.numeric(as.matrix(dat2[,-1]) %*% coef_vec1)
 
 sum(abs(pred_vec1 - pred_vec3)) <= 1e-6
-
 
 ##########################
 
@@ -158,6 +160,44 @@ coef_vec
 pred_vec <- output_predictions(cvglmnet_res, dat, idx)
 head(pred_vec)
 ## the other ways to extract predictions are slightly more involved. see how output_predictions is implemented
+
+#######
+
+# aside: observe that it /matters/ whether or not you scale the coefficients
+#  this is true for both Lasso and penalized logistic regression
+## unlike OLS (ordinary least squares, via the lm function), your predictions could be
+##   completely different, and you might select completely different variables
+## let's use our (unscaled) dat_org dataset as an example
+
+idx <- which(colnames(dat_org) == "AnyCHD")
+## we do not include an intercept here just for demonstration
+set.seed(10)
+cvglmnet_res_alt <- glmnet::cv.glmnet(x = as.matrix(dat_org[,-idx]), y = dat_org[,idx], family = "binomial",
+                                      intercept = F)
+
+coef_vec_alt <- output_coefficients(cvglmnet_res_alt, dat_org, idx)
+coef_vec_alt
+coef_vec
+
+pred_vec_alt <- output_predictions(cvglmnet_res_alt, dat_org, idx)
+table(pred_vec_alt, pred_vec)
+
+
+# just to drive this point home, let's look at the predictions for 
+#   logistic regression (no penalization) on both the original data and its scaled counterpart
+## we'll need to include an intercept in the model for this demonstration to work
+head(dat)
+glm_res <- stats::glm(AnyCHD ~ . , data = dat, family = stats::binomial)
+pred_vec_glm <- output_predictions(glm_res, dat, idx)
+
+head(dat_org)
+glm_res_2 <- stats::glm(AnyCHD ~ . , data = dat_org, family = stats::binomial)
+pred_vec_glm_2 <- output_predictions(glm_res, dat, idx)
+
+table(pred_vec_glm, pred_vec_glm_2)
+
+########################3
+
 
 # for fun, we can make the following plot, similar to what we did at the end of the logisitic example
 ## main things to note (useful for the homework):
