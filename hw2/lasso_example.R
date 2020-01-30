@@ -138,6 +138,7 @@ pred_vec3 <- as.numeric(as.matrix(dat2[,-1]) %*% coef_vec1)
 
 sum(abs(pred_vec1 - pred_vec3)) <= 1e-6
 
+
 ##########################
 
 # penalized logistic regression
@@ -158,4 +159,19 @@ pred_vec <- output_predictions(cvglmnet_res, dat, idx)
 head(pred_vec)
 ## the other ways to extract predictions are slightly more involved. see how output_predictions is implemented
 
-
+# for fun, we can make the following plot, similar to what we did at the end of the logisitic example
+## main things to note (useful for the homework):
+##  - 1) you can set the color to the numerics 1 through 4 for 1=black, 2=red, 3=green, 4=blue
+##  - 2) to create a line break in the title (i.e. main), use the "\n" character
+pred_vec <- as.numeric(1/(1+exp(-(as.matrix(dat[,-idx])%*%coef_vec))))
+ord <- order(pred_vec)
+par(mar = c(4,6,4,0.5))
+graphics::plot(pred_vec[ord], 
+               col = c(1,2)[dat$AnyCHD+1][ord], pch = 16,
+               xlab = "Subject index (Ordered)", 
+               ylab = "Predicted probability of CHD",
+               main = "Predicted probability of subjects for CHD\nPenalized logisitc regression")
+graphics::lines(x = c(-1e4,1e4), y = rep(0.5, 2), 
+                col = "black", lty = 2, lwd = 3)
+legend("topleft", c("Had CHD", "Did not have CHD"), 
+       bty="n", fill=c(1, 2))
