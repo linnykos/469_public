@@ -182,7 +182,6 @@ coef_vec
 pred_vec_alt <- output_predictions(cvglmnet_res_alt, dat_org, idx)
 table(pred_vec_alt, pred_vec)
 
-
 # just to drive this point home, let's look at the predictions for 
 #   logistic regression (no penalization) on both the original data and its scaled counterpart
 ## we'll need to include an intercept in the model for this demonstration to work
