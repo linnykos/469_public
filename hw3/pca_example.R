@@ -116,3 +116,10 @@ plot(pca_res_unscaled$x[,1], pca_res_unscaled$x[,2], asp = T, xlab = "Principal 
 res <- stats::princomp(dat2[1:5,])
 # However, the next line will work, since we use prcomp instead
 res <- stats::prcomp(dat2[1:5,])
+
+
+################
+
+# note: the eigenvalues of correlation matrices are non-negative, but they CAN be 0.
+cor_mat <- matrix(c(1/2, 1/4, 1/4, 1/8), 2, 2)
+eigen(cor_mat)
