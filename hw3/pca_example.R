@@ -14,20 +14,20 @@ p_vec <- sapply(1:trials, function(i){
 })
 
 # let's first make a histogram
-hist(p_vec, breaks = 20, col = "gray")
+hist(p_vec, breaks = 20, col = "gray", xlab = "P-value bin")
 
 # let's make a QQ plot now
 # As a quick review: a QQ plot shows the expected distribution on one axes, and the observed distribution on the other
 #  Spend some time to look at the lecture notes, and/or think about what this actually means.
 # Below, we make a QQ plot that compares the p_vec to a uniform distribution. This is NOT quite
-#  what you need for the homework, but it's extremely close, so spend some time to think about what is
-#  actually been shown here.
-plot(sort(p_vec, decreasing = F), seq(0, 1, length.out = length(p_vec)), asp = T)
+#  what you need for the homework, but it's extremely close with some minor tweaks, so spend some time to
+#  think about what is actually been shown here.
+plot(sort(p_vec, decreasing = F), seq(0, 1, length.out = length(p_vec)), asp = T,
+     xlab = "Observed distribution", ylab = "Expected distribution")
 lines(c(0,1), c(0,1), col = "red", lty = 2, lwd = 2)
-# Think about: Why is this a QQ plot. What should the axes labels be?
 # Remember, for your homework, you need to transform the pvalues by -log_10
 log_p <- -log(p_vec, base = 10)
-plot(log_p, p_vec)
+plot(p_vec, log_p, pch = 16, xlab = "P-value", ylab = "-Log10 of p-value" )
 # Note: in this example, using the qqnorm or qqplot functions won't help.
 
 #################################
@@ -48,9 +48,13 @@ names(pca_res)
 pca_res$sdev # this vector are the corresponding sqrt-root eigenvalues of the correlation matrix,
 ##            what you need to make your scree plot
 # note: for your homework, you will need to normalize this vector to sum to 1 first!
+plot(pca_res) # this is the scree plot plotted, plotting pca_res$sdev^2
 pca_res$rotation # this matrix actually contains the eigenvectors of the correlation matrix
 pca_res$x # this matrix contains the principal components (starting with the left-most (i.e., first) column
 ##           representing the first principal component)
+
+plot(pca_res$x[,1], pca_res$x[,2], asp = T, xlab = "Principal component 1", ylab = "Principal component 2", pch = 16,
+     col = rgb(0.5, 0.5, 0.5, 0.5))
 
 ######
 
@@ -61,7 +65,8 @@ names(eigen_res)
 
 # we can check this is indeed an eigen-decomposition
 # check 1: eigenvectors is a unitary matrix
-t(eigen_res$vectors) %*% eigen_res$vectors
+tmp <- t(eigen_res$vectors) %*% eigen_res$vectors
+tmp[abs(tmp) <= 1e-6] <- 0; tmp
 # check 2: we have an exact decomposition
 sum(abs(stats::cor(dat2) - eigen_res$vectors %*% diag(eigen_res$values) %*% t(eigen_res$vectors)))
 
@@ -86,8 +91,10 @@ names(svd_res)
 
 # we can check this is indeed an SVD
 # check 1: left singular vectors and right singular vectors are unitary matrices
-t(svd_res$u) %*% svd_res$u
-t(svd_res$v) %*% svd_res$v
+tmp <- t(svd_res$u) %*% svd_res$u
+tmp[abs(tmp) <= 1e-6] <- 0; tmp
+tmp <- t(svd_res$v) %*% svd_res$v
+tmp[abs(tmp) <= 1e-6] <- 0; tmp
 # check 2: we have an exact decomposition
 sum(abs(dat2 - svd_res$u %*% diag(svd_res$d) %*% t(svd_res$v)))
 
@@ -99,6 +106,9 @@ sum(abs(dat2 - svd_res$u %*% diag(svd_res$d) %*% t(svd_res$v)))
 # NOTE 1: Had we NOT used center = T, scale. = T for stats::prcomp, we would've gotten very different results
 pca_res_unscaled <- stats::prcomp(dat2, center = T, scale. = F)
 head(pca_res_unscaled$x[,1])
+
+plot(pca_res_unscaled$x[,1], pca_res_unscaled$x[,2], asp = T, xlab = "Principal component (unscaled) 1",
+     ylab = "Principal (unscaled) component 2", pch = 16, col = rgb(0.5, 0.5, 0.5, 0.5))
 
 # Note 2: We do NOT use stats::princomp (another PCA function in R) since it crashes when there are more
 #  variables than samples
