@@ -28,7 +28,7 @@ lines(c(0,1), c(0,1), col = "red", lty = 2, lwd = 2)
 # Remember, for your homework, you need to transform the pvalues by -log_10
 log_p <- -log(p_vec, base = 10)
 plot(p_vec, log_p, pch = 16, xlab = "P-value", ylab = "-Log10 of p-value" )
-# Note: in this example, using the qqnorm or qqplot functions won't help.
+# Note: in this example, using the qqnorm function won't help.
 
 #################################
 
