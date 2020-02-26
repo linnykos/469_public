@@ -69,8 +69,7 @@ while(length(q) > 0){
   }
 }
 
-clockwise90 = function(a) { t(a[nrow(a):1,]) } 
-image(clockwise90(mat_sign_grid), asp = T)
+image(mat_sign_grid[nrow(mat_sign_grid):1,ncol(mat_sign_grid):1], asp = T)
   
 # set up sampler to sample from mixture of 3 gaussians
 sampler <- function(x){
@@ -95,7 +94,7 @@ obs_mat <- obs_mat[-unique(unlist(idx)),]
 y_label <- sapply(1:nrow(obs_mat), function(i){
   idx_i <- which.min(abs(obs_mat[i,1] - grid_val))
   idx_j <- which.min(abs(obs_mat[i,2] - grid_val))
-  mat_sign_grid[idx_j,100-idx_i+1]
+  mat_sign_grid[idx_i, idx_j]
 })
 
 # add random noise
