@@ -150,6 +150,15 @@ plot(xgb_cv$evaluation_log[,iter], xgb_cv$evaluation_log[,test_error_mean],
 ##############################
 
 # HW4 code (from HW4 pdf) put here for your convenience
+snp_data <- as.matrix(read.csv("https://raw.githubusercontent.com/linnylin92/469_public/master/hw4/synthetic_famuss.csv"))
+heart_disease <- snp_data[,1]; snp_data <- snp_data[,-1]
+
+set.seed(10); n <- length(heart_disease)
+idx <- sample(1:n, round(.2*n))
+train_dat <- snp_data[-idx,]; train_label <- heart_disease[-idx]
+test_dat <- snp_data[idx,]; test_label <- heart_disease[idx]
+
+###
 
 source("https://raw.githubusercontent.com/linnylin92/469_public/master/hw4/hw4_functions.R")
 dat <- as.matrix(read.csv("https://raw.githubusercontent.com/linnylin92/469_public/master/hw4/synthetic_data.csv"))
