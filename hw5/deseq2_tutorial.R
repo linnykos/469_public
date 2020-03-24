@@ -28,6 +28,7 @@ library(DESeq2); library(hexbin)
 library(vsn); library(SummarizedExperiment)
 library(genefilter); library(pheatmap)
 load(url("https://github.com/linnylin92/469_public/raw/master/hw5/airway.RData"))
+dds
 # an R object called dds will appear in your workspace, with class DESeqDataSet
 
 # To be clear, importantly, you want to make sure your version of SummarizedExperiment is 1.16.1
@@ -38,7 +39,7 @@ sessionInfo()
 # If this is the case, you have two options: 1) (the painful route) reinstall the latest version of R from the CRAN website
 #   for instance, at https://cran.r-project.org/. You want to install R version 3.6.3.
 #   Note: This will require you to re-install /all/ the packages you have used before, which can be a headache
-#   especially if you use R for other classes. Realistically, it's at most an hour of tedius re-installation for everything (R and packages).
+#   especially if you use R for other classes. Realistically, it's at most an hour of tedious re-installation for everything (R and packages).
 #   2) (the less painful but more tedious route) Email Kevin, and he will give you more specific directions on an alternative Question 1 to do.
 
 ########################
@@ -51,7 +52,7 @@ getSlots(class(dds))
 dds@assays # This is how you access things in S4 classes, with the "@" sign, as opposed to the "$" sign you are used to
 # Essentially, an S4 class is a more formal way to design object-oriented things in R. You can read more about it in http://adv-r.had.co.nz/S4.html
 #   We won't focus too much about it in this class
-colData(dds) # Observe that in Bioconductor, the convention is to have the rows represent the genes, and the columns represent the subjects.
+SummarizedExperiment::colData(dds) # Observe that in Bioconductor, the convention is to have the rows represent the genes, and the columns represent the subjects.
 #  This is OPPOSITE (or more exactly, the transpose) of what we are used to in statistics.
 count_dds <- SummarizedExperiment::assay(dds) # a handy function to extract the count matrix for you
 count_dds[1:5, 1:5]
@@ -61,7 +62,6 @@ head(rownames(count_dds))
 head(count_dds)
 
 # Relevant code for Q1.B:
-SummarizedExperiment::colData(dds)
 dds <- DESeq2::DESeq(dds) # observe that a bunch of preprocessing is being done
 res <- DESeq2::results(dds)
 res # we can peak at the results stored in res, but we will not look at it too closely for HW5
