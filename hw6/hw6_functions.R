@@ -43,5 +43,5 @@ compute_misclustering_rate <- function(vec1, vec2){
     sum(diag(tab2))/sum(tab2)
   })
 
-  max(similarity_vec)
+  1-max(similarity_vec)
 }
